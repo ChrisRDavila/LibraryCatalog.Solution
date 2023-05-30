@@ -1,15 +1,14 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Library.Models
 {
   public class Patron
   {
-    public int PId { get; set; }
-    public string PUsername { get; set; }
-    public string PPassword { get; set; }
-    public string PEmail { get; set; }
+    public int PatronId { get; set; }
     public string PName { get; set; }
-    public List<Checkout> JoinEntities { get; }
-
+    public List<CopyPatron> JoinEntities { get; }
+    public ApplicationUser User { get; set; }
+    
   }
 }

@@ -1,6 +1,39 @@
-@{
+@* @{
   Layout = "_Layout";
 }
 
-<h1>Welcome to the Project Name!</h1>
-<p>@Html.ActionLink("See all objects", "Route", "Objects")</p> <p>@Html.ActionLink("See all classname2", "Route", "ClassName2")</p>
+@using Library.Models;
+
+<h1>Welcome to our Library App</h1>
+
+<hr>
+
+<h4>Login for Patrons</h4>
+@if (Model["patrons"].Length == 0)
+{
+  <p>No patrons have been added yet!</p>
+} 
+<ul>
+  @foreach (Category cat in Model["categories"])
+  {
+    <li>@Html.ActionLink(@cat.Name, "Details", "Categories", new { id = @cat.CategoryId})</li>
+  }
+</ul>
+
+<h4>Items</h4>
+@if (Model["items"].Length == 0)
+{
+  <p>No items have been added yet!</p>
+} 
+<ul>
+  @foreach (Item item in Model["items"])
+  {
+    <li>@Html.ActionLink(@item.Description, "Details", "Items", new { id = @item.ItemId})</li>
+  }
+</ul>
+
+<hr>
+
+<p>@Html.ActionLink("Manage items", "Index", "Items")</p> 
+<p>@Html.ActionLink("Manage categories", "Index", "Categories")</p>
+<p>@Html.ActionLink("Manage tags", "Index", "Tags")</p> *@

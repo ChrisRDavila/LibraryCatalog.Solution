@@ -6,8 +6,9 @@ namespace Library.Models
   {
     public int CopyId { get; set; }
     public int BookId { get; set; }
-    public string Status { get; set; }
+    public int Quantity { get; set; }
     public Book Book { get; set; }
-    public List<Checkout> JoinEntities { get; }
+    public List<CopyPatron> JoinEntities { get; }
+    public ApplicationUser User { get; set; }
   }
 }
