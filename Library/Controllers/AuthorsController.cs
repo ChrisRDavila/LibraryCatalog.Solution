@@ -105,5 +105,11 @@ public class AuthorsController : Controller
   }
 
   [HttpPost]
-  public ActionResult DeleteJo
+  public ActionResult DeleteJoin(int joinId)
+  {
+    AuthorBook joinEntry = _db.AuthorBooks.FirstOrDefault(entry => entry.AuthorBookId == joinId);
+    _db.AuthorBooks.Remove(joinEntry);
+    _db.SaveChanges();
+    return RedirectToAction("Index");
+  }
 }
