@@ -10,8 +10,9 @@ namespace Library.Models
     public string Title { get; set; }
     [Required(ErrorMessage = "The book's publication year can't be empty!")]
     public int PublicationYear { get; set; }
-    public List<AuthorBook> JoinEntities { get; }
-    public List<Copy> Copies { get; set; }
+    public List<AuthorBook> JoinAuthorBook { get; }
+    public List<BookCheckout> JoinBookCheckout { get; }
+    public List<BookCopy> JoinBookCopy { get; set; }
     public ApplicationUser User { get; set; }
   }
 }

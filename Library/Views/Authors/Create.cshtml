@@ -11,10 +11,10 @@
 
 @using (Html.BeginForm())
 {
-    @Html.LabelFor(model => model.AFirstName)
+    @Html.LabelFor(model => model.AFirstName, "Author First Name")
     @Html.TextBoxFor(model => model.AFirstName)
 
-    @Html.LabelFor(model => model.ALastName)
+    @Html.LabelFor(model => model.ALastName, "Author Last Name")
     @Html.TextBoxFor(model => model.ALastName)
 
     <input type="submit" value="Add new author" class="btn btn-default" />
