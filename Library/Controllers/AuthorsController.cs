@@ -14,6 +14,9 @@ namespace Library.Controllers
   public class AuthorsController : Controller
   {
     private readonly LibraryContext _db;
+
+    private readonly UserManager<ApplicationUser> _userManager;
+
     
     public AuthorsController(UserManager<ApplicationUser> userManager, LibraryContext db)
     {
