@@ -30,30 +30,48 @@ namespace Library.Controllers
     }
 
     [HttpPost]
-    public async Task<ActionResult> Register(RegisterViewModel model)
+    public async Task<ActionResult> Register(AssignRoleViewModel model)
     {
       if (!ModelState.IsValid)
       {
-        return View(model);
+          return View(model);
+      }
+
+      if (model.AdminPassword != "adminpassword")
+      {
+          ModelState.AddModelError("", "Invalid admin password.");
+          return View(model);
+      }
+
+      ApplicationUser user = new ApplicationUser { UserName = model.UserName };
+      
+      IdentityResult result = await _userManager.CreateAsync(user, model.AdminPassword);
+      if (result.Succeeded)
+      {
+          var assignRoleResult = await _userManager.AddToRoleAsync(user, "Admin");
+          if (assignRoleResult.Succeeded)
+          {
+              return RedirectToAction("AssignRole", "Role", new { id = user.Id });
+          }
+          else
+          {
+              foreach (var error in assignRoleResult.Errors)
+              {
+                  ModelState.AddModelError("", error.Description);
+              }
+              return View(model);
+          }
       }
       else
       {
-        ApplicationUser user = new ApplicationUser { UserName = model.Email };
-        IdentityResult result = await _userManager.CreateAsync(user, model.Password);
-        if (result.Succeeded)
-        {
-          return RedirectToAction("Index");
-        }
-        else
-        {
           foreach (IdentityError error in result.Errors)
           {
-            ModelState.AddModelError("", error.Description);
+              ModelState.AddModelError("", error.Description);
           }
           return View(model);
-        }
       }
     }
+
 
     public ActionResult Login()
     {

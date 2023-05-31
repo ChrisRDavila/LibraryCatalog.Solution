@@ -1,0 +1,34 @@
+@{
+  Layout = "_Layout";
+}
+
+@model Library.ViewModels.AssignRoleViewModel
+
+<h2>Set up role</h2>
+<hr />
+@using (Html.BeginForm("Assign", "Role", FormMethod.Post))
+{
+
+  <div class="form-group">
+    <label for="UserRoles">Select Role:</label><br />
+
+    @foreach (var role in Model.Roles)
+    {
+      <label class="radio-inline">
+        @Html.RadioButtonFor(model => model.UserRoles, role.Name, new { id = role.Name })
+        @role.Name
+      </label>
+    }
+  </div> 
+
+  @if (Model.UserRoles.Contains("Admin"))
+  {
+    <div class="form-group">
+      @Html.LabelFor(model => model.AdminPassword)
+      @Html.PasswordFor(model => model.AdminPassword, new { @class = "form-control" })
+      @Html.ValidationMessageFor(model => model.AdminPassword)
+    </div>
+  }
+
+  <input type="submit" value="Assign" class="btn btn-default"/>
+}
