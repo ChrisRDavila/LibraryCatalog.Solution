@@ -21,6 +21,17 @@
       <li>@Html.ActionLink(@book.Title, "Details", "Books", new { id = @book.BookId})</li>
     }
   </ul>
+  <h4>Authors for @User.Identity.Name</h4>
+  @if (Model["authors"].Length == 0)
+  {
+    <p>No Authors have been added yet!</p>
+  } 
+  <ul>
+    @foreach (Author author in Model["authors"])
+    {
+      <li>@Html.ActionLink(@author.ALastName, "Details", "Books", new { id = @author.AuthorId})</li>
+    }
+  </ul>
 }
 else
 {

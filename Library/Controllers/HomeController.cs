@@ -23,9 +23,9 @@ namespace Library.Controllers
     [HttpGet("/")]
     public async Task<ActionResult> Index()
     {
-      Author[] authors = _db.Authors.ToArray();
+      // Author[] authors = _db.Authors.ToArray();
       Dictionary<string, object[]> model = new Dictionary<string, object[]>();
-      model.Add("authors", authors);
+      // model.Add("authors", authors);
       string userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
       ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
 
@@ -35,6 +35,11 @@ namespace Library.Controllers
                           .Where(entry => entry.User.Id == currentUser.Id)
                           .ToArray();
         model.Add("books", books);
+        Author[] authors = _db.Authors
+                          .Where(entry => entry.User.Id == currentUser.Id)
+                          .ToArray();
+        model.Add("authors", authors);
+
       }
       return View(model);
     }
