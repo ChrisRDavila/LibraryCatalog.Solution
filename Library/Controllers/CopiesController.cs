@@ -1,43 +1,62 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Library.Models;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using System.Security.Claims;
 using System;
 
 namespace Library.Controllers
 {
+  [Authorize]
   public class CopiesController : Controller
   {
     private readonly LibraryContext _db;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public CopiesController(LibraryContext db)
+    public CopiesController(UserManager<ApplicationUser> userManager, LibraryContext db)
     {
+      _userManager = userManager;
       _db = db;
     }
 
-    public ActionResult Index()
+    public async Task<ActionResult> Index()
     {
-      return View(_db.Copies.ToList());
+      string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+      List<Copy> userCopies = _db.Copies
+                          .Where(entry => entry.User.Id == currentUser.Id)
+                          .ToList();
+      return View(userCopies);
     }
 
     public ActionResult Create()
     {
       return View();
     }
-
+    
     [HttpPost]
-    public ActionResult Create(Copy copy)
+    public async Task<ActionResult> Create(Copy copy)
     {
+      string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+      copy.User = currentUser;
       _db.Copies.Add(copy);
       _db.SaveChanges();
       return RedirectToAction("Index");
+      
     }
 
     public ActionResult Details(int id)
     {
-      Copy thisCopy = _db.Copies.FirstOrDefault(copies => copies.CopyId == id);
+      Copy thisCopy = _db.Copies
+          .Include(copy => copy.JoinEntities)
+          .ThenInclude(join => join.Patron)
+          .FirstOrDefault(copy => copy.CopyId == id);
       return View(thisCopy);
     }
 
