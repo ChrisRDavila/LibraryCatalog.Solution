@@ -7,12 +7,12 @@ using System.Collections.Generic;
 
 namespace Library.Controllers
 {
-  public class RoleController : Controller
+  public class RolesController : Controller
   {
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public RoleController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+    public RolesController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
     {
       _roleManager = roleManager;
       _userManager = userManager;
