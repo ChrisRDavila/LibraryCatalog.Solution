@@ -1,0 +1,24 @@
+@{
+  Layout = "_Layout";
+}
+
+@model Library.Models.Copy
+
+<h2>Edit</h2>
+
+<h4>Edit this copy: @Html.DisplayFor(model => model.Serial)</h4>
+
+@using (Html.BeginForm())
+{
+  @Html.HiddenFor(model => model.CopyId)
+
+  @Html.LabelFor(model => model.Serial)
+  @Html.EditorFor(model => model.Serial)
+
+  @Html.LabelFor(model => model.Quantity)
+  @Html.EditorFor(model => model.Quantity)
+
+  <input type="submit" value="Save" />
+}
+
+<p>@Html.ActionLink("Back to list", "Index")</p>

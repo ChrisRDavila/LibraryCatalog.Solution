@@ -1,0 +1,22 @@
+@{
+  Layout = "_Layout";
+}
+
+@model Library.Models.Copy
+
+<h4>Add a new copy</h4>
+
+<p>@Html.ValidationMessageFor(model => model.Serial, "", new { @class = "text-danger", @style = "font-weight: 600;" })</p>
+<p>@Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger", @style = "font-weight: 600;" })</p>
+
+@using (Html.BeginForm())
+{
+  @Html.LabelFor(model => model.Serial)
+  @Html.TextBoxFor(model => model.Serial)
+
+  @Html.LabelFor(model => model.Quantity)
+  @Html.TextBoxFor(model => model.Quantity)
+
+  <input type="submit" value="Add new copy" class="btn btn-default" />
+}
+<p>@Html.ActionLink("Show all copies", "Index")</p>
