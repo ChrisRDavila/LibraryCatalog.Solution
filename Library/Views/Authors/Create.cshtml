@@ -6,6 +6,9 @@
 
 <h4>Add a new author</h4>
 
+<p>@Html.ValidationMessageFor(model => model.AFirstName, "", new { @class = "text-danger", @style = "font-weight: 600;" })</p>
+<p>@Html.ValidationMessageFor(model => model.ALastName, "", new { @class = "text-danger", @style = "font-weight: 600;" })</p>
+
 @using (Html.BeginForm())
 {
     @Html.LabelFor(model => model.AFirstName)
