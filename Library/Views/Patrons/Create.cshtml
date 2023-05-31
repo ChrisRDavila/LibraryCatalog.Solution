@@ -1,0 +1,18 @@
+@{
+  Layout = "_Layout";
+}
+
+@model Library.Models.Patron
+
+<h4>Add a new patron</h4>
+
+<p>@Html.ValidationMessageFor(model => model.PName, "", new { @class = "text-danger", @style = "font-weight: 600;" })</p>
+
+@using (Html.BeginForm())
+{
+  @Html.LabelFor(model => model.PName)
+  @Html.TextBoxFor(model => model.PName)
+
+  <input type="submit" value="Add new patron" class="btn btn-default" />
+}
+<p>@Html.ActionLink("Show all patrons", "Index")</p>
