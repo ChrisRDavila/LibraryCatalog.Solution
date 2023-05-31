@@ -4,21 +4,31 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace Library.Controllers
 {
+  [Authorize]
   public class BooksController : Controller
   {
     private readonly LibraryContext _db;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public BooksController(LibraryContext db)
+    public BooksController(UserManager<ApplicationUser> userManager, LibraryContext db)
     {
+      _userManager = userManager;
       _db = db;
     }
 
-    public ActionResult Index()
+    public async Task<IActionResult> Index(string searchString)
     {
-      return View(_db.Books.ToList());
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+        List<Book> userBooks = _db.Books.ToList();
+        return View(userBooks);
     }
 
     public ActionResult Details(int id)
@@ -37,11 +47,15 @@ namespace Library.Controllers
     }
 
     [HttpPost]
-    public ActionResult Create(Book book)
+    public async Task<ActionResult> Create(Book book)
     {
+      string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+      book.User = currentUser;
       _db.Books.Add(book);
       _db.SaveChanges();
       return RedirectToAction("Index");
+      
     }
 
     public ActionResult AddAuthor(int id)
@@ -102,5 +116,61 @@ namespace Library.Controllers
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
+
+    public ActionResult AddCopy(int id)
+    {
+      Book thisBook = _db.Books.FirstOrDefault(book => book.BookId == id);
+      return View(thisBook);
+    }
+
+    [HttpPost]
+    public ActionResult AddCopy(Copy copy, int bookId)
+    {
+      Book thisBook = _db.Books.FirstOrDefault(book => book.BookId == bookId);
+      Copy newCopy = new Copy();
+      newCopy.BookId = thisBook.BookId;
+      _db.Copies.Add(newCopy);
+      _db.SaveChanges();
+      return RedirectToAction("Details", new { id = thisBook.BookId });
+    }
+
+    public ActionResult DeleteCopy(int id)
+    {
+      Copy thisCopy = _db.Copies.FirstOrDefault(copy => copy.CopyId == id);
+      return View(thisCopy);
+    }
+
+    [HttpPost, ActionName("DeleteCopy")]
+    public ActionResult DeleteCopyConfirmed(int id)
+    {
+      Copy thisCopy = _db.Copies.FirstOrDefault(copy => copy.CopyId == id);
+      _db.Copies.Remove(thisCopy);
+      _db.SaveChanges();
+      return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    public ActionResult AddPatron(int id)
+    {
+      Copy thisCopy = _db.Copies.FirstOrDefault(copy => copy.CopyId == id);
+      ViewBag.PatronId = new SelectList(_db.Patrons, "PatronId", "PName");
+      return View(thisCopy);
+    }
+
+    [HttpPost]
+    public ActionResult AddPatron(Copy copy, int patronId)
+    {
+      #nullable enable
+      CopyPatron? joinEntity = _db.CopyPatrons.FirstOrDefault(join => join.PatronId == patronId && join.CopyId == copy.CopyId);
+      #nullable disable
+
+      if (joinEntity == null && patronId != 0)
+      {
+        _db.CopyPatrons.Add(new CopyPatron() { PatronId = patronId, CopyId = copy.CopyId });
+        _db.SaveChanges();
+      }
+      return RedirectToAction("Details", new { id = copy.BookId });
+    }
+
   }  
 }

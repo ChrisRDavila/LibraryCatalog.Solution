@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using Library.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using System.Security.Claims;
 
 
 namespace Library.Controllers
@@ -18,13 +21,21 @@ namespace Library.Controllers
     }
 
     [HttpGet("/")]
-    public Task<ActionResult> Index()
+    public async Task<ActionResult> Index()
     {
       Author[] authors = _db.Authors.ToArray();
-      Book[] books = _db.Books.ToArray();
-      Dictionary<string, object> model = new Dictionary<string, object>();
+      Dictionary<string, object[]> model = new Dictionary<string, object[]>();
       model.Add("authors", authors);
-      model.Add("books", books);
+      string userId = this.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+
+      if (currentUser != null)
+      {
+        Book[] books = _db.Books
+                          .Where(entry => entry.User.Id == currentUser.Id)
+                          .ToArray();
+        model.Add("books", books);
+      }
       return View(model);
     }
   }

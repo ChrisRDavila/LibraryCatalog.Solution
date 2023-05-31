@@ -1,0 +1,29 @@
+@{
+  Layout = "_Layout";
+}
+
+@using Library.Models;
+
+<h1>Authors</h1>
+
+<form asp-controller="Authors" asp-action="Index">
+  <p>
+    Search By Name: <input type="text" name="SearchString" />
+    <input type="submit" value="Filter">
+  </p>
+</form>
+
+@if (Model.Count == 0)
+{
+  <h3>No authors have been added yet</h3>
+}
+
+<ul>
+  @foreach (Author author in Model)
+  {
+    <li>@Html.ActionLink($"{author.AFirstName} {author.ALastName}", "Details", new {id = author.AuthorId})</li>
+  }
+</ul>
+
+<p>@Html.ActionLink("Add new Author", "Create")</p>
+<p>@Html.ActionLink("Home", "Index", "Home")</p>

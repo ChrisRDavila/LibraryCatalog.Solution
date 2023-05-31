@@ -1,9 +1,13 @@
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Library.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace Library.Controllers
 {
@@ -11,24 +15,28 @@ namespace Library.Controllers
   {
     private readonly LibraryContext _db;
     
-    public AuthorsController(LibraryContext db)
+    public AuthorsController(UserManager<ApplicationUser> userManager, LibraryContext db)
     {
+      _userManager = userManager;
       _db = db;
     }
 
-    public ActionResult Index()
+    public async Task<IActionResult> Index()
     {
-      return View(_db.Authors.ToList());
+      string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+      List<Author> model = _db.Authors.ToList();
+      return View(model);
     }
+
 
     public ActionResult Create()
     {
-      ViewBag.BookId = new SelectList(_db.Books, "BookId", "Title");
       return View();
     }
 
     [HttpPost]
-    public ActionResult Create(Author author)
+    public async Task<ActionResult> Create(Author author)
     {
       if (!ModelState.IsValid)
       {
@@ -37,6 +45,9 @@ namespace Library.Controllers
       }
       else
       {
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+        author.User = currentUser;
         _db.Authors.Add(author);
         _db.SaveChanges();
         return RedirectToAction("Index");
@@ -110,6 +121,13 @@ namespace Library.Controllers
       _db.AuthorBooks.Remove(joinEntry);
       _db.SaveChanges();
       return RedirectToAction("Index");
+    }
+
+    [HttpPost, ActionName("Search")]
+    public ActionResult Search(string search)
+    {
+      List<Author> model = _db.Authors.Where(author => author.AFirstName.ToLower().Contains(search.ToLower())).ToList();
+      return View(model);
     }
   }
 }

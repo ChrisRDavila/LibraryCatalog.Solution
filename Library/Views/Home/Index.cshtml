@@ -1,39 +1,34 @@
-@* @{
-  Layout = "_Layout";
+@{
+    Layout = "_Layout";
 }
 
-@using Library.Models;
+@using Library.Models
 
 <h1>Welcome to our Library App</h1>
 
 <hr>
 
-<h4>Login for Patrons</h4>
-@if (Model["patrons"].Length == 0)
+@if (User.Identity.IsAuthenticated)
 {
-  <p>No patrons have been added yet!</p>
-} 
-<ul>
-  @foreach (Category cat in Model["categories"])
+  <h4>Books for @User.Identity.Name</h4>
+  @if (Model["books"].Length == 0)
   {
-    <li>@Html.ActionLink(@cat.Name, "Details", "Categories", new { id = @cat.CategoryId})</li>
-  }
-</ul>
-
-<h4>Items</h4>
-@if (Model["items"].Length == 0)
+    <p>No books have been added yet!</p>
+  } 
+  <ul>
+    @foreach (Book book in Model["books"])
+    {
+      <li>@Html.ActionLink(@book.Title, "Details", "Books", new { id = @book.BookId})</li>
+    }
+  </ul>
+}
+else
 {
-  <p>No items have been added yet!</p>
-} 
-<ul>
-  @foreach (Item item in Model["items"])
-  {
-    <li>@Html.ActionLink(@item.Description, "Details", "Items", new { id = @item.ItemId})</li>
-  }
-</ul>
+  <h4>Books</h4>
+  <p>Please @Html.ActionLink("log in", "LogIn", "Account") to view or manage your books.</p>
+}
 
 <hr>
 
-<p>@Html.ActionLink("Manage items", "Index", "Items")</p> 
-<p>@Html.ActionLink("Manage categories", "Index", "Categories")</p>
-<p>@Html.ActionLink("Manage tags", "Index", "Tags")</p> *@
+<p>@Html.ActionLink("Manage books", "Index", "Books")</p> 
+<p>@Html.ActionLink("Create or manage an account", "Index", "Account")</p>
