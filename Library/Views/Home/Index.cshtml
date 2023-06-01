@@ -29,7 +29,9 @@ else
 }
 
 <hr>
-
-<p>@Html.ActionLink("Manage books", "Index", "Books")</p> 
-<p>@Html.ActionLink("Manage librarians", "Index", "Librarians") | @Html.ActionLink("Manage patrons", "Index", "Patrons")</p>
-<p>@Html.ActionLink("Create or manage an accounts", "Index", "Accounts")</p>
+@if (User.IsInRole("Admin"))
+{
+  <p>@Html.ActionLink("Manage books", "Index", "Books")</p> 
+  <p>@Html.ActionLink("Manage librarians", "Index", "Librarians") | @Html.ActionLink("Manage patrons", "Index", "Patrons")</p>
+  <p>@Html.ActionLink("Create or manage an account", "Index", "Accounts")</p>
+}

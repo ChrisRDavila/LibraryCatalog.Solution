@@ -22,16 +22,28 @@ namespace Library.Controllers
       _userManager = userManager;
       _db = db;
     }
-
+    [AllowAnonymous]
     public async Task<IActionResult> Index(string searchString)
     {
-      string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-      ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+      
+      ApplicationUser currentUser = await _userManager.GetUserAsync(User);
 
-      List<Book> userBooks = _db.BookPatrons
+      List<Book> userBooks;
+
+      if (User.IsInRole("Admin"))
+      {
+        userBooks = _db.Books
+          .Include(book => book.JoinAuthorBook)
+          .Include(book => book.JoinBookCopy)
+          .ToList();
+      }
+      else
+      {
+      userBooks = _db.BookPatrons
           .Where(bp => bp.PatronId.ToString() == currentUser.Id)
           .Select(bp => bp.Book)
           .ToList();
+      }
 
       return View(userBooks);
     }

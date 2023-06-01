@@ -13,17 +13,22 @@ using System.Security.Claims;
 
 namespace Library.Controllers
 {
+  [Authorize(Roles = "Admin, User")]
   public class CheckoutController : Controller
   {
     private readonly LibraryContext _db;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public CheckoutController(LibraryContext db)
+    public CheckoutController(UserManager<ApplicationUser> userManager, LibraryContext db)
     {
+      _userManager = userManager;
       _db = db;
     }
 
-    public ActionResult Index()
+    public async Task<ActionResult> Index()
     {
+      string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
       List<Checkout> checkouts = _db.Checkouts.ToList();
       return View(checkouts);
     }
@@ -48,13 +53,15 @@ namespace Library.Controllers
     }
 
     [HttpPost]
-    public ActionResult Create(Checkout checkout)
+    public async Task<ActionResult> Create(Checkout checkout)
     {
       if (!ModelState.IsValid)
       {
         return View(checkout);
       }
-
+      string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+      checkout.User = currentUser;
       _db.Checkouts.Add(checkout);
       _db.SaveChanges();
 

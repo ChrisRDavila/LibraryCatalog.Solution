@@ -1,7 +1,7 @@
-@* @{
+@{
   Layout = "_Layout";
 }
-
+@using System.Security.Claims
 @using Library.Models
 @model Library.Models.Book
 
@@ -10,7 +10,7 @@
 <h3>@Html.DisplayNameFor(model => model.Title): @Html.DisplayFor(model => model.Title)</h3>  
 <h3>@Html.DisplayNameFor(model => model.PublicationYear): @Html.DisplayFor(model => model.PublicationYear)</h3> 
 
-@if(@Model.JoinEntities.Count == 0)
+@if(@Model.JoinAuthorBook.Count == 0)
 {
   <p>This book does not have any authors yet!</p>
 }
@@ -18,7 +18,7 @@ else
 {
   <h4>This book has the following authors:</h4>
   <ul>
-    @foreach(AuthorBook join in Model.JoinEntities)
+    @foreach(AuthorBook join in Model.JoinAuthorBook)
     {
       <li>Author: @join.Author.ALastName</li>
       @using (Html.BeginForm("DeleteJoin", "Books"))
@@ -33,4 +33,4 @@ else
 <p>@Html.ActionLink("Back to list", "Index")</p>
 <p>@Html.ActionLink("Edit Book", "Edit", new { id = Model.BookId })</p>
 <p>@Html.ActionLink("Add an Author", "AddAuthor", new { id = Model.BookId })</p>
-<p>@Html.ActionLink("Delete Book", "Delete", new { id = Model.BookId })</p> *@
+<p>@Html.ActionLink("Delete Book", "Delete", new { id = Model.BookId })</p>

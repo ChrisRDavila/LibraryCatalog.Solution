@@ -15,15 +15,20 @@ namespace Library.Controllers
   public class PatronsController : Controller
   {
     public readonly LibraryContext _db;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public PatronsController(LibraryContext db)
+    public PatronsController(UserManager<ApplicationUser> userManager, LibraryContext db)
     {
+      _userManager = userManager;
       _db = db;
     }
 
-    public ActionResult Index()
+    public async Task<ActionResult> Index()
     {
-      return View(_db.Patrons.ToList());
+      string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+      ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+      List<Patron> model = _db.Patrons.ToList();
+      return View(model);
     }
 
     public ActionResult Create()
@@ -32,16 +37,35 @@ namespace Library.Controllers
     }
 
     [HttpPost]
-    public ActionResult Create(Patron patron)
+    public async Task<ActionResult> Create(Patron patron)
     {
-      _db.Patrons.Add(patron);
-      _db.SaveChanges();
-      return RedirectToAction("Index");
+      if (!ModelState.IsValid)
+      {
+        return View(patron);
+      }
+      else
+      {
+        string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        ApplicationUser currentUser = await _userManager.FindByIdAsync(userId);
+        patron.User = currentUser;
+        _db.Patrons.Add(patron);
+        _db.SaveChanges();
+        return RedirectToAction("Index");
+      }
     }
 
     public ActionResult Details(int id)
     {
-      Patron thisPatron = _db.Patrons.FirstOrDefault(patron => patron.PatronId == id);
+      Patron thisPatron = _db.Patrons
+                            .Include(patron => patron.JoinBookPatron)
+                            .ThenInclude(join => join.Book)
+                            .Include(patron => patron.JoinPatronCheckout)
+                            .ThenInclude(join => join.Checkout)
+                            .FirstOrDefault(patron => patron.PatronId == id);
+      if (thisPatron == null)
+      {
+        return RedirectToAction("Index");
+      }
       return View(thisPatron);
     }
 
@@ -57,6 +81,51 @@ namespace Library.Controllers
       _db.Entry(patron).State = EntityState.Modified;
       _db.SaveChanges();
       return RedirectToAction("Index");
+    }
+
+    public ActionResult AddBook(int id)
+    {
+      Patron thisPatron = _db.Patrons.FirstOrDefault(patron => patron.PatronId == id);
+      ViewBag.BookId = new SelectList(_db.Books, "BookId", "Title");
+      return View(thisPatron);
+    }
+
+    [HttpPost]
+    public ActionResult AddBook(Patron patron, int bookId)
+    {
+      #nullable enable
+      BookPatron? joinEntity = _db.BookPatrons.FirstOrDefault(join => (join.BookId == bookId && join.PatronId == patron.PatronId));
+      #nullable disable
+      if (joinEntity == null && bookId != 0)
+      {
+        _db.BookPatrons.Add(new BookPatron() { BookId = bookId, PatronId = patron.PatronId });
+        _db.SaveChanges();
+      }
+      
+      return RedirectToAction("Details", new { id = patron.PatronId });
+    }
+
+    public ActionResult AddCheckout(int id)
+    {
+      Patron thisPatron = _db.Patrons.FirstOrDefault(patron => patron.PatronId == id);
+      ViewBag.CheckoutId = new SelectList(_db.Checkouts, "CheckoutId", "CheckoutDate");
+      return View(thisPatron);
+    }
+
+    [HttpPost]
+    public ActionResult AddCheckout(Patron patron, int checkoutId)
+    {
+      #nullable enable
+      
+      PatronCheckout? joinEntity = _db.PatronCheckouts.FirstOrDefault(join => (join.CheckoutId == checkoutId && join.PatronId == patron.PatronId));
+      #nullable disable
+      if (joinEntity == null && checkoutId != 0)
+      {
+        _db.PatronCheckouts.Add(new PatronCheckout() { CheckoutId = checkoutId, PatronId = patron.PatronId });
+        _db.SaveChanges();
+      }
+      
+      return RedirectToAction("Details", new { id = patron.PatronId });
     }
 
     public ActionResult Delete(int id)
