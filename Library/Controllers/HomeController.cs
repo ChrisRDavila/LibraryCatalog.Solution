@@ -33,10 +33,10 @@ namespace Library.Controllers
                           .Where(entry => entry.User.Id == currentUser.Id)
                           .ToArray();
         model.Add("books", books);
-        // Author[] authors = _db.Authors
-        //                   .Where(entry => entry.User.Id == currentUser.Id)
-        //                   .ToArray();
-        // model.Add("authors", authors);
+        Author[] authors = _db.Authors
+                          .Where(entry => entry.User.Id == currentUser.Id)
+                          .ToArray();
+        model.Add("authors", authors); 
 
       }
       return View(model);

@@ -1,0 +1,19 @@
+@{
+  Layout = "_Layout";
+}
+
+@model Library.Models.Copy
+
+<h2>Add a book </h2>
+
+<h4>Assign copy to a book: @Html.DisplayFor(model => model.Serial)</h4>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.CopyId)
+
+    @Html.Label("Select book")
+    @Html.DropDownList("BookId")
+
+    <input type="submit" class="button" value="Save" />
+}

@@ -10,7 +10,7 @@
 
 @using (Html.BeginForm())
 {
-  @Html.LabelFor(model => model.PName)
+  @Html.LabelFor(model => model.PName, "Patron Name")
   @Html.TextBoxFor(model => model.PName)
 
   <input type="submit" value="Add new patron" class="btn btn-default" />

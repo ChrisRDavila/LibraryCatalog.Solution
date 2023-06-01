@@ -4,16 +4,16 @@
 
 @model Library.Models.Copy
 
-<h2>Add a Patron</h2>
+<h2>Add a Librarian</h2>
 
-<h4>Add a patron to this copy: @Html.DisplayFor(model => model.Serial)</h4>
+<h4>Add a librarian to this copy: @Html.DisplayFor(model => model.Serial)</h4>
 
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.CopyId)
 
-    @Html.Label("Select copy")
-    @Html.DropDownList("CopyId")
+    @Html.Label("Select librarian")
+    @Html.DropDownList("LibrarianId")
 
     <input type="submit" value="Save" />
 }

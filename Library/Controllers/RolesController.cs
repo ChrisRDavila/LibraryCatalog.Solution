@@ -110,39 +110,8 @@ namespace Library.Controllers
       var model = new AssignRoleViewModel
       {
         UserId = user.Id,
-        UserName = user.UserName,
-        UserRoles = userRoles,
-        Roles = roles
+        UserName = user.UserName
       };
-
-      return View(model);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
-    {
-      var user = await _userManager.FindByIdAsync(model.UserId);
-      if (user == null)
-      {
-        return NotFound();
-      }
-
-      var currentRoles = await _userManager.GetRolesAsync(user);
-      var result = await _userManager.RemoveFromRolesAsync(user, currentRoles);
-
-      if (result.Succeeded)
-      {
-        result = await _userManager.AddToRolesAsync(user, model.UserRoles);
-        if (result.Succeeded)
-        {
-          return RedirectToAction("Index");
-        }
-      }
-
-      ModelState.AddModelError("", "Failed to assign roles");
-
-      model.UserRoles = currentRoles;
-      model.Roles = _roleManager.Roles;
 
       return View(model);
     }

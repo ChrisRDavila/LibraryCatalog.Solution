@@ -1,0 +1,19 @@
+@{
+  Layout = "_Layout";
+}
+
+@model Library.Models.Checkout
+
+<h2>Add a book</h2>
+
+<h4>Attach book to this checkout: @Html.DisplayFor(model => model.CheckoutId) | @Html.DisplayFor(model => model.CheckoutDate)</h4>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.CheckoutId)
+
+    @Html.Label("Select book")
+    @Html.DropDownList("BookId")
+
+    <input type="submit" class="button" value="Save" />
+}

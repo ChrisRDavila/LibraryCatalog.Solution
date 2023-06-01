@@ -40,7 +40,7 @@ namespace Library.Controllers
     }
 
     [HttpPost]
-    public async Task<ActionResult> Create(Author author)
+    public async Task<ActionResult> Create(Author author, int BookId)
     {
       if (!ModelState.IsValid)
       {

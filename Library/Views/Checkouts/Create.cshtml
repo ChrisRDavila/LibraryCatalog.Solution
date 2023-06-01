@@ -1,0 +1,28 @@
+@{
+  Layout = "_Layout";
+}
+
+@using Library.Models
+@model Library.Models.Checkout
+
+<h4>Add a new checkout for the library</h4>
+
+@* <p>@Html.ValidationMessageFor(model => model.CheckoutDate, "", new { @class = "text-danger", @style = "font-weight: 600;" })</p>
+<p>@Html.ValidationMessageFor(model => model.DueDate, "", new { @class = "text-danger", @style = "font-weight: 600;" })</p>
+<p>@Html.ValidationMessageFor(model => model.IsOverdue, "", new { @class = "text-danger", @style = "font-weight: 600;" })</p>
+<p>@Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger", @style = "font-weight: 600;" })</p> *@
+
+
+@using (Html.BeginForm())
+{
+  @Html.LabelFor(model => model.CheckoutDate, "Checkout Date")
+  @Html.EditorFor(model => model.CheckoutDate)
+  @Html.LabelFor(model => model.DueDate, "Due Date")
+  @Html.EditorFor(model => model.DueDate)
+  @Html.LabelFor(model => model.IsOverdue, "is checkout Over Due?")
+  @Html.EditorFor(model => model.IsOverdue)
+  @Html.LabelFor(model => model.Status, "Status")
+  @Html.EditorFor(model => model.Status)
+
+  <input type="submit" class="button" value="Add new checkout" />
+}

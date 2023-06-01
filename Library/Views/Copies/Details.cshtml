@@ -1,4 +1,4 @@
-@* @{
+@{
   Layout = "_Layout";
 }
 
@@ -10,20 +10,20 @@
 <h3>@Html.DisplayNameFor(model => model.Serial): @Html.DisplayFor(model => model.Serial)</h3>  
 <h3>@Html.DisplayNameFor(model => model.Quantity): @Html.DisplayFor(model => model.Quantity)</h3> 
 
-@if(@Model.JoinEntities.Count == 0)
+@if(@Model.JoinBookCopy.Count == 0)
 {
-  <p>This copy is not assigned to any authors yet!</p>
+  <p>This copy is not assigned to a book yet!</p>
 }
 else
 {
   <h4>This copy has been issued to the following patrons:</h4>
   <ul>
-    @foreach(CopyPatron join in Model.JoinEntities)
+    @foreach(BookCopy join in Model.JoinBookCopy)
     {
-      <li>Patron: @join.Patron.PName</li>
+      <li>Book: @join.Book.Title</li>
       @using (Html.BeginForm("DeleteJoin", "Copies"))
       {
-        @Html.Hidden("joinId", @join.CopyPatronId)
+        @Html.Hidden("joinId", @join.BookCopyId)
         <input type="submit" value="Delete"/>
       }
     }
@@ -32,5 +32,6 @@ else
 
 <p>@Html.ActionLink("Back to list", "Index")</p>
 <p>@Html.ActionLink("Edit Copy", "Edit", new { id = Model.CopyId })</p>
-<p>@Html.ActionLink("Add a Patron", "AddPatron", new { id = Model.CopyId })</p>
-<p>@Html.ActionLink("Delete Copy", "Delete", new { id = Model.CopyId })</p> *@
+<p>@Html.ActionLink("Add a Book", "AddBook", new { id = Model.CopyId })</p>
+<p>@Html.ActionLink("Add a Librarian", "AddLibrarian", new { id = Model.CopyId })</p>
+<p>@Html.ActionLink("Delete Copy", "Delete", new { id = Model.CopyId })</p>

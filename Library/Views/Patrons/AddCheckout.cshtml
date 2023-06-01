@@ -1,0 +1,19 @@
+@{
+  Layout = "_Layout";
+}
+
+@model Library.Models.Patron
+
+<h2>Add a checked out book to this patron</h2>
+
+<h4>Check out a book for this patron: @Html.DisplayFor(model => model.PName)</h4>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.PatronId)
+
+    @Html.Label("Select checked out book")
+    @Html.DropDownList("CheckoutId")
+
+    <input type="submit" class="button" value="Save" />
+}

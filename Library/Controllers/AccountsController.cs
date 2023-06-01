@@ -31,29 +31,43 @@ namespace Library.Controllers
 
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
-        {
-          if (!ModelState.IsValid)
+    {
+      if (!ModelState.IsValid)
+      {
+          return View(model);
+      }
+
+      var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+      var result = await _userManager.CreateAsync(user, model.Password);
+
+      if (result.Succeeded)
+      {
+          if (model.IsAdmin)
           {
-              return View(model);
+              if (model.AdminPassword != "admin")
+              {
+                  ModelState.AddModelError(nameof(model.AdminPassword), "The admin password is incorrect.");
+                  return View(model);
+              }
+              
+              await _userManager.AddToRoleAsync(user, "Admin");
+              return RedirectToAction("Index", "Accounts");
           }
           else
           {
-            ApplicationUser user = new ApplicationUser { UserName = model.Email };
-            IdentityResult result = await _userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded)
-            {
-                return RedirectToAction("AssignRole", "Roles", new { id = user.Id });
-            }
-            else
-            {
-                foreach (IdentityError error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
-                return View(model);
-            }
+              await _userManager.AddToRoleAsync(user, "User");
+              return RedirectToAction("Index", "Accounts");
           }
-        }
+      }
+
+      foreach (var error in result.Errors)
+      {
+          ModelState.AddModelError("", error.Description);
+      }
+
+      return View(model);
+    }
+
 
     public ActionResult Login()
     {

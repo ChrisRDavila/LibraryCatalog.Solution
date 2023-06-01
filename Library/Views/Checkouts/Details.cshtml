@@ -1,0 +1,39 @@
+@{
+  Layout = "_Layout";
+}
+
+@using System.Security.Claims
+@using Library.Models
+@model Library.Models.Checkout
+
+<h2>Checked Out Details</h2>
+<hr />
+<h3>Checkout ID: @Html.DisplayFor(model => model.CheckoutId)</h3>
+<h3>Checkout date: @Html.DisplayFor(model => model.CheckoutDate)</h3>
+<h3>Due Date: @Html.DisplayFor(model => model.DueDate)</h3>
+<h3>Overdue: @Html.DisplayFor(model => model.IsOverdue)</h3>
+<h3>Status: @Html.DisplayFor(model => model.Status)</h3>
+
+@if (@Model.JoinBookCheckout.Count == 0)
+{
+  <p>This checkout does not have any books yet!</p>
+}
+else
+{
+  <h4>This checkout has the following books:</h4>
+  <ul>
+  @foreach (BookCheckout join in Model.JoinBookCheckout)
+    {
+      <li>Book: @join.Book.Title</li>
+      @using (Html.BeginForm("DeleteJoin", "Books"))
+      {
+        @Html.Hidden("joinId", @join.BookCheckoutId)
+        <input type="submit" value="Delete" />
+      }
+    }
+  </ul>
+}
+
+<p>@Html.ActionLink("Edit Checkout", "Edit", new { id = Model.CheckoutId }) | @Html.ActionLink("Delete Checkout", "Delete", new { id = Model.CheckoutId }) | @Html.ActionLink("Add a Book", "AddBook", new {
+  id = Model.CheckoutId }) | @Html.ActionLink("Patron to Checkout", "AddPatron", new {
+  id = Model.CheckoutId })</p>
