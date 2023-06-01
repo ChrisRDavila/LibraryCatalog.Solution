@@ -9,13 +9,15 @@ namespace Library.Controllers
   public class AccountsController : Controller
   {
     private readonly LibraryContext _db;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public AccountsController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, LibraryContext db)
+    public AccountsController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<ApplicationUser> signInManager, LibraryContext db)
     {
       _userManager = userManager;
       _signInManager = signInManager;
+      _roleManager = roleManager;
       _db = db;
     }
 
@@ -23,7 +25,6 @@ namespace Library.Controllers
     {
       return View();
     }
-
     public ActionResult Register()
     {
       return View();
@@ -37,8 +38,8 @@ namespace Library.Controllers
           return View(model);
       }
 
-      var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-      var result = await _userManager.CreateAsync(user, model.Password);
+      ApplicationUser user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+      IdentityResult result = await _userManager.CreateAsync(user, model.Password);
 
       if (result.Succeeded)
       {
@@ -49,23 +50,31 @@ namespace Library.Controllers
                   ModelState.AddModelError(nameof(model.AdminPassword), "The admin password is incorrect.");
                   return View(model);
               }
-              
+
+              if (!await _roleManager.RoleExistsAsync("Admin"))
+              {
+                  await _roleManager.CreateAsync(new IdentityRole("Admin"));
+              }
               await _userManager.AddToRoleAsync(user, "Admin");
-              return RedirectToAction("Index", "Accounts");
           }
           else
           {
+              if (!await _roleManager.RoleExistsAsync("User"))
+              {
+                  await _roleManager.CreateAsync(new IdentityRole("User"));
+              }
               await _userManager.AddToRoleAsync(user, "User");
-              return RedirectToAction("Index", "Accounts");
           }
+          return RedirectToAction("Index", "Accounts");
       }
-
-      foreach (var error in result.Errors)
+      else
       {
-          ModelState.AddModelError("", error.Description);
+          foreach (IdentityError error in result.Errors)
+          {
+              ModelState.AddModelError(string.Empty, error.Description);
+          }
+          return View(model);
       }
-
-      return View(model);
     }
 
 

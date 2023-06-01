@@ -23,7 +23,7 @@ namespace Library.Controllers
       _userManager = userManager;
       _db = db;
     }
-
+    [AllowAnonymous]
     public async Task<ActionResult> Index()
     {
       string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -33,12 +33,12 @@ namespace Library.Controllers
                           .ToList();
       return View(userCopies);
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult Create()
     {
       return View();
     }
-    
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult> Create(Copy copy)
     {
@@ -50,7 +50,7 @@ namespace Library.Controllers
       return RedirectToAction("Index");
       
     }
-
+    [Authorize(Roles = "Admin, User")]
     public ActionResult Details(int id)
     {
       Copy thisCopy = _db.Copies
@@ -59,13 +59,13 @@ namespace Library.Controllers
           .FirstOrDefault(copy => copy.CopyId == id);
       return View(thisCopy);
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult Edit(int id)
     {
       Copy thisCopy = _db.Copies.FirstOrDefault(copies => copies.CopyId == id);
       return View(thisCopy);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public ActionResult Edit(Copy copy)
     {
@@ -73,14 +73,14 @@ namespace Library.Controllers
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult AddBook(int id)
     {
       Copy thisCopy = _db.Copies.FirstOrDefault(copies => copies.CopyId == id);
       ViewBag.BookId = new SelectList(_db.Books, "BookId", "Title");
       return View(thisCopy);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public ActionResult AddBook(Copy copy, int bookId)
     {
@@ -118,13 +118,13 @@ namespace Library.Controllers
       };
       return RedirectToAction("Index");
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult Delete(int id)
     {
       Copy thisCopy = _db.Copies.FirstOrDefault(copies => copies.CopyId == id);
       return View(thisCopy);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost, ActionName("Delete")]
     public ActionResult DeleteConfirmed(int id)
     {

@@ -23,9 +23,15 @@
   @Html.LabelFor(user=> user.ConfirmPassword)
   @Html.EditorFor(user=> user.ConfirmPassword)
 
+  @Html.LabelFor(user => user.IsAdmin)
+  @Html.CheckBoxFor(user => user.IsAdmin)
 
+  @Html.LabelFor(user => user.AdminPassword)
+  @Html.EditorFor(user => user.AdminPassword)
+
+  
 
   <input type="submit" value="Register" />
 }
 
-<p>@Html.ActionLink("Back to accounts page", "Index")</p>
+<p>@Html.ActionLink("Back to accounts page", "Index", "Accounts")</p>

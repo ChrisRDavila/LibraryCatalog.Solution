@@ -35,7 +35,7 @@ namespace Library.Controllers
 
       return View(userBooks);
     }
-
+    [Authorize(Roles = "Admin, User")]
     public ActionResult Details(int id)
     {
       Book thisBook = _db.Books
@@ -46,12 +46,12 @@ namespace Library.Controllers
         .FirstOrDefault(book => book.BookId == id);
       return View(thisBook);
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult Create()
     {
       return View();
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult> Create(Book book)
     {
@@ -65,14 +65,14 @@ namespace Library.Controllers
       return RedirectToAction("Index");
       
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult AddAuthor(int id)
     {
       Book thisBook = _db.Books.FirstOrDefault(book => book.BookId == id);
       ViewBag.AuthorId = new SelectList(_db.Authors, "AuthorId", "AName");
       return View(thisBook);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public ActionResult AddAuthor(Book book, int authorId)
     {
@@ -86,13 +86,13 @@ namespace Library.Controllers
       }
       return RedirectToAction("Details", new { id = book.BookId });
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult Edit(int id)
     {
       Book thisBook = _db.Books.FirstOrDefault(book => book.BookId == id);
       return View(thisBook);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public ActionResult Edit(Book book)
     {
@@ -100,13 +100,13 @@ namespace Library.Controllers
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult Delete(int id)
     {
       Book thisBook = _db.Books.FirstOrDefault(book => book.BookId == id);
       return View(thisBook);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost, ActionName("Delete")]
     public ActionResult DeleteConfirmed(int id)
     {
@@ -115,7 +115,7 @@ namespace Library.Controllers
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public ActionResult DeleteAuthor(int joinId)
     {
@@ -124,13 +124,13 @@ namespace Library.Controllers
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult AddCopy(int id)
     {
       Book thisBook = _db.Books.FirstOrDefault(book => book.BookId == id);
       return View(thisBook);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public ActionResult AddCopy(Copy copy, int bookId)
     {
@@ -143,7 +143,7 @@ namespace Library.Controllers
 
       return RedirectToAction("Details", new { id = thisBook.BookId });
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult DeleteCopy(int id)
     {
       Copy thisCopy = _db.Copies.FirstOrDefault(copy => copy.CopyId == id);
@@ -158,7 +158,7 @@ namespace Library.Controllers
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public ActionResult AddPatron(int id)
     {
@@ -166,7 +166,7 @@ namespace Library.Controllers
       ViewBag.PatronId = new SelectList(_db.Patrons, "PatronId", "PName");
       return View(thisCopy);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public ActionResult AddPatron(Copy copy, int patronId)
     {

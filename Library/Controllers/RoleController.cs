@@ -1,18 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
+using Library.Models;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
-using Library.Models;
-using Library.ViewModels;
-using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace Library.Controllers
 {
-  public class RolesController : Controller
+  [Authorize(Roles = "Admin")]
+  public class RoleController : Controller
   {
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public RolesController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+    public RoleController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
     {
       _roleManager = roleManager;
       _userManager = userManager;

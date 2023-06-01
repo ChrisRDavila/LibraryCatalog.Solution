@@ -25,6 +25,7 @@ namespace Library.Controllers
       _db = db;
     }
 
+    [AllowAnonymous]
     public async Task<IActionResult> Index()
     {
       string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -33,12 +34,12 @@ namespace Library.Controllers
       return View(model);
     }
 
-
+    [Authorize(Roles = "Admin")]
     public ActionResult Create()
     {
       return View();
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult> Create(Author author, int BookId)
     {
@@ -57,7 +58,7 @@ namespace Library.Controllers
         return RedirectToAction("Index");
       }
     }
-
+    [Authorize(Roles = "Admin, User")]
     public ActionResult Details(int id)
     {
       Author thisAuthor = _db.Authors
@@ -66,14 +67,14 @@ namespace Library.Controllers
                               .FirstOrDefault(author => author.AuthorId == id);
       return View(thisAuthor);
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult Edit(int id)
     {
       Author thisAuthor = _db.Authors.FirstOrDefault(author => author.AuthorId == id);
       ViewBag.BookId = new SelectList(_db.Books, "BookId", "Title");
       return View(thisAuthor);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public ActionResult Edit(Author author)
     {
@@ -81,13 +82,13 @@ namespace Library.Controllers
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult Delete(int id)
     {
       Author thisAuthor = _db.Authors.FirstOrDefault(author => author.AuthorId == id);
       return View(thisAuthor);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost, ActionName("Delete")]
     public ActionResult DeleteConfirmed(int id)
     {
@@ -96,14 +97,14 @@ namespace Library.Controllers
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
-
+    [Authorize(Roles = "Admin")]
     public ActionResult AddBook(int id)
     {
       Author thisAuthor = _db.Authors.FirstOrDefault(author => author.AuthorId == id);
       ViewBag.BookId = new SelectList(_db.Books, "BookId", "Title");
       return View(thisAuthor);
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public ActionResult AddBook(Author author, int BookId)
     {
@@ -117,7 +118,7 @@ namespace Library.Controllers
       }
       return RedirectToAction("Details", new { id = author.AuthorId });
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public ActionResult DeleteJoin(int joinId)
     {
@@ -126,7 +127,7 @@ namespace Library.Controllers
       _db.SaveChanges();
       return RedirectToAction("Index");
     }
-
+    [Authorize(Roles = "Admin, User")]
     [HttpPost, ActionName("Search")]
     public ActionResult Search(string search)
     {
