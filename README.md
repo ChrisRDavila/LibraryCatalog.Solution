@@ -1,6 +1,6 @@
-# (Application Name) remove parens
+# Library Catalog Solution
 
-#### (Brief Description of Application) remove parens
+#### Cataloging books/authors for library with M2M relationships, MVC Csharp, My SQL
 
 #### By (Your Name Here) remove parans
 
